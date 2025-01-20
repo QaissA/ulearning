@@ -1,4 +1,8 @@
+# Ignore the .gitignore file itself
+.gitignore
 node_modules
 # Keep environment variables out of version control
 .env
 dist
+# Ignore package-lock.json
+package-lock.json
