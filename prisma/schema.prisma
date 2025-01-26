@@ -7,12 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id               Int       @id @default(autoincrement())
   name             String    @db.VarChar(255)
   email            String    @unique(map: "User_email_key") @db.VarChar(255)
   password         String    @unique(map: "User_password_key") @db.VarChar(255)
-  role             user_role @default(CUSTOMER)
+  roleId           Int       
+  role             Role      @relation(fields: [roleId], references: [id])
   adress           String?   @db.VarChar(255)
   verificationCode String?   @db.VarChar(255)
   isVerified       Boolean   @default(false)
@@ -20,7 +21,9 @@ model user {
   updatedAt        DateTime
 }
 
-enum user_role {
-  ADMIN
-  CUSTOMER
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.VarChar(50) // e.g., "ADMIN", "CUSTOMER", "MANAGER"
+  description String? @db.VarChar(255) // Optional description of the role
+  users       User[]
 }
