@@ -9,12 +9,13 @@ import {
   loginUser 
 } from "../controller/authController";
 import express from "express";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();
 
 //ROUTES FOR USERS CONTROLLER
 userRouter.post("/", registerUser);
-userRouter.get("/:id", getUser);
+userRouter.get("/:id", authenticateToken, getUser);
 userRouter.put("/:id", ModifyUser);
 userRouter.delete("/:id", removeUser);
 

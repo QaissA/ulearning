@@ -7,20 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  TEACHER
+  STUDENT
+  PARENT
+}
+
 model user {
   id               Int       @id @default(autoincrement())
   name             String    @db.VarChar(255)
   email            String    @unique(map: "User_email_key") @db.VarChar(255)
   password         String    @unique(map: "User_password_key") @db.VarChar(255)
-  role             user_role @default(CUSTOMER)
+  role             Role      @default(STUDENT)
   adress           String?   @db.VarChar(255)
   verificationCode String?   @db.VarChar(255)
   isVerified       Boolean   @default(false)
   createdAt        DateTime  @default(now())
-  updatedAt        DateTime
+  updatedAt        DateTime  @updatedAt
+
+  // Relation to Student (optional)
+  student          Student?
 }
 
-enum user_role {
-  ADMIN
-  CUSTOMER
+model Student {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @unique
+  user       user      @relation(fields: [userId], references: [id])
+  gradeLevel String    @db.VarChar(255)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
