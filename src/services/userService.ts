@@ -14,7 +14,7 @@ export const createUser = async (data: { name: string; email: string; password: 
           name: data.name,
           email: data.email,
           password: hashedPassword,
-          role: data.role ?? Role.CUSTOMER,
+          role: data.role ?? Role.STUDENT,
           adress: data.adress,
         },
       });
