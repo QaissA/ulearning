@@ -12,7 +12,7 @@ model User {
   name             String    @db.VarChar(255)
   email            String    @unique(map: "User_email_key") @db.VarChar(255)
   password         String    @unique(map: "User_password_key") @db.VarChar(255)
-  roleId           Int       
+  roleId           Int       @default(2)
   role             Role      @relation(fields: [roleId], references: [id])
   adress           String?   @db.VarChar(255)
   verificationCode String?   @db.VarChar(255)
@@ -27,7 +27,7 @@ model User {
 model Student {
   id         Int       @id @default(autoincrement())
   userId     Int       @unique
-  user       user      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
   gradeLevel String    @db.VarChar(255)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -38,4 +38,4 @@ model Role {
   name        String  @unique @db.VarChar(50) // e.g., "ADMIN", "CUSTOMER", "MANAGER"
   description String? @db.VarChar(255) // Optional description of the role
   users       User[]
-}
+}   

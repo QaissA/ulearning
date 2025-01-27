@@ -1,11 +1,19 @@
 import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt"
 
+interface userCreate {
+  name: string; 
+  email: string; 
+  password: string; 
+  roleId: number; 
+  adress?: string
+}
+
 
 const prisma = new PrismaClient();
 const saltRounds = 10;
     
-export const createUser = async (data: { name: string; email: string; password: string; role?: Role; adress?: string }) => {
+export const createUser = async (data: userCreate) => {
     try {
       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
   
@@ -14,7 +22,11 @@ export const createUser = async (data: { name: string; email: string; password: 
           name: data.name,
           email: data.email,
           password: hashedPassword,
-          role: data.role ?? Role.STUDENT,
+          role:   {
+            connect : {
+              id : data.roleId
+            }
+          },
           adress: data.adress,
         },
       });
@@ -31,7 +43,7 @@ export const getUserById = async (id : number) => {
     })
 }   
 
-export const updateUser = async(id: number, data : { name? : string, email? : string, password? : string, role? : Role, adress? : string}) => {
+export const updateUser = async(id: number, data : userCreate) => {
     let updatedData = {...data};
 
     if(data.password) {

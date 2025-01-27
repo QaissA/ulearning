@@ -37,12 +37,13 @@ export const getStudentsController = async (req: Request, res: Response) => {
 };
 
 // Get Student By ID 
-export const getStudentByIdController = async (req: Request, res: Response) => {
+export const getStudentByIdController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
     const student = await getStudentById(Number(id));
     if (!student) {
-      return res.status(404).json({ error: 'Student not found' });
+      res.status(404).json({ error: 'Student not found' });
+      return;  // Ensure that nothing else is executed
     }
     res.status(200).json(student);
   } catch (error) {
@@ -53,6 +54,7 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
     }
   }
 };
+
 
 // Update Student
 export const updateStudentController = async (req: Request, res: Response) => {

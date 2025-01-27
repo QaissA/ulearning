@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { registerUserService, loginUserService } from "../services/authService";
 
-export const registerUser1 = async (req: Request, res: Response): Promise<void> => {
+export const registerUser1 = async (req: Request, res: Response): Promise<any> => {
   try {
     const { name, email, password } = req.body;
     const newUser = await registerUserService(name, email, password);
@@ -11,7 +11,7 @@ export const registerUser1 = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
+export const loginUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req.body;
     const { token, user } = await loginUserService(email, password);

@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import { connect } from "http2";
 
 const prisma = new PrismaClient();
 
@@ -23,7 +24,12 @@ export const registerUserService = async (name: string, email: string, password:
 
   // Create the user
   const newUser = await prisma.user.create({
-    data: { name, email, password: hashedPassword },
+    data: { 
+      name, 
+      email, 
+      password: hashedPassword,
+      roleId : 2
+    },
   });
 
   return newUser;
