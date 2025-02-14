@@ -2,11 +2,12 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createNote = async (studentId: number, subject: string, score: number) => {
+export const createNote = async (studentId: number, matiereId: number, score: number) => {
   return await prisma.note.create({
-    data: { studentId, subject, score },
+    data: { studentId, matiereId, score },
   });
 };
+
 
 export const getNotes = async () => {
   return await prisma.note.findMany({
