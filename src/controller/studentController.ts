@@ -7,11 +7,10 @@ import {
   deleteStudent,
 } from '../services/studentService';
 
-// Create Student
 export const createStudentController = async (req: Request, res: Response) => {
-  const { userId, gradeLevel } = req.body;
+  const { name, email, password, gradeLevel } = req.body; // Extract user details
   try {
-    const newStudent = await createStudent({ userId, gradeLevel });
+    const newStudent = await createStudent({ name, email, password, gradeLevel });
     res.status(201).json(newStudent);
   } catch (error) {
     if (error instanceof Error) {
@@ -21,6 +20,7 @@ export const createStudentController = async (req: Request, res: Response) => {
     }
   }
 };
+
 
 // Get All Students
 export const getStudentsController = async (req: Request, res: Response) => {
