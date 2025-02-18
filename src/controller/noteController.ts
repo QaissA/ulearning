@@ -3,13 +3,13 @@ import * as noteService from "../services/noteService";
 
 export const createNote = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { studentId, subject, score } = req.body;
-    if (!studentId || !subject || score === undefined) {
+    const { studentId, matiereId, score } = req.body;
+    if (!studentId || !matiereId || score === undefined) {
       res.status(400).json({ error: "Missing required fields" });
       return;
     }
     
-    const note = await noteService.createNote(studentId, subject, score);
+    const note = await noteService.createNote(studentId, matiereId, score);
     res.status(201).json(note);
   } catch (error) {
     console.error(error);
