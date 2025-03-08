@@ -4,6 +4,7 @@ import attendanceRouter from "./attendanceRoutes";
 import notesRouter from "./noteRoutes";
 import matiereRouter from "./matiereRoutes";
 import classRouter from "./classRoutes";
+import timetableRouter from "./timetableRoutes";
 
 const router = express.Router();
 
@@ -13,5 +14,6 @@ router.use('/attendance', attendanceRouter);
 router.use('/notes', notesRouter);
 router.use('/matieres', matiereRouter);
 router.use('/classes', classRouter);
+router.use('/timetable', timetableRouter);
 
 export default router;

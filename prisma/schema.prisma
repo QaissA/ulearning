@@ -27,6 +27,8 @@ model User {
   // Attendance & Notes (Only for students)
   attendances Attendance[]
   notes       Note[]
+
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Attendance {
@@ -58,7 +60,8 @@ model Matiere {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  notes  Note[]
+  notes          Note[]
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Class {
@@ -69,12 +72,28 @@ model Class {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  users       User[] // A class has multiple users (students, teachers)
+  users          User[] 
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Role {
   id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(50) // "STUDENT", "TEACHER", "ADMIN", etc.
+  name        String   @unique @db.VarChar(50)
   description String?  @db.VarChar(255) 
   users       User[]
+}
+
+model EmploiDuTemps {
+  id          Int      @id @default(autoincrement())
+  classId     Int
+  class       Class    @relation(fields: [classId], references: [id])
+  matiereId   Int
+  matiere     Matiere  @relation(fields: [matiereId], references: [id])
+  teacherId   Int
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  day         String   @db.VarChar(20) 
+  heureDebut  String   @db.VarChar(5)
+  heureFin    String   @db.VarChar(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
