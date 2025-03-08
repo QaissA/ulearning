@@ -6,7 +6,7 @@ export const classService = {
   getAllClasses: async () => {
     return await prisma.class.findMany({
       include: {
-        students: true, // Include students in the class
+        users: true,
       },
     });
   },
@@ -15,7 +15,7 @@ export const classService = {
     return await prisma.class.findUnique({
       where: { id },
       include: {
-        students: true,
+        users: true,
       },
     });
   },

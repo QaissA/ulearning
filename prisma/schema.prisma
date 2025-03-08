@@ -11,8 +11,8 @@ model User {
   id               Int      @id @default(autoincrement())
   name             String   @db.VarChar(255)
   email            String   @unique(map: "User_email_key") @db.VarChar(255)
-  password         String   @unique(map: "User_password_key") @db.VarChar(255)
-  roleId           Int      @default(2)
+  password         String   @db.VarChar(255)
+  roleId           Int
   role             Role     @relation(fields: [roleId], references: [id])
   adress           String?  @db.VarChar(255)
   verificationCode String?  @db.VarChar(255)
@@ -20,29 +20,19 @@ model User {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  // Relation to Student (optional)
-  student Student?
-}
+  // Relation to Class
+  classId Int?  
+  class   Class? @relation(fields: [classId], references: [id])
 
-model Student {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id])
-  gradeLevel String   @db.VarChar(255)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  classId    Int?     // Optional: Some students might not be assigned yet
-  class      Class?   @relation(fields: [classId], references: [id])
-
+  // Attendance & Notes (Only for students)
   attendances Attendance[]
   notes       Note[]
 }
 
 model Attendance {
   id        Int      @id @default(autoincrement())
-  studentId Int
-  student   Student  @relation(fields: [studentId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   date      DateTime @default(now())
   status    String   @db.VarChar(10) // "PRESENT" or "ABSENT"
   createdAt DateTime @default(now())
@@ -51,8 +41,8 @@ model Attendance {
 
 model Note {
   id         Int      @id @default(autoincrement())
-  studentId  Int
-  student    Student  @relation(fields: [studentId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
   matiereId  Int
   matiere    Matiere  @relation(fields: [matiereId], references: [id])
   score      Float
@@ -61,11 +51,11 @@ model Note {
 }
 
 model Matiere {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique @db.VarChar(255) // Subject name (e.g., Math, Science)
-  description String? @db.Text
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255) 
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   notes  Note[]
@@ -79,11 +69,12 @@ model Class {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  students    Student[] // One class has many students
+  users       User[] // A class has multiple users (students, teachers)
 }
 
 model Role {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique @db.VarChar(50)
-  description String? @db.VarChar(255) 
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50) // "STUDENT", "TEACHER", "ADMIN", etc.
+  description String?  @db.VarChar(255) 
+  users       User[]
 }
