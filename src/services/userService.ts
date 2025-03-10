@@ -14,27 +14,27 @@ const prisma = new PrismaClient();
 const saltRounds = 10;
     
 export const createUser = async (data: userCreate) => {
-    try {
-      const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-  
-      return await prisma.user.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          password: hashedPassword,
-          role:   {
-            connect : {
-              id : data.roleId
-            }
-          },
-          adress: data.adress,
+  try {
+    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+    return await prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+        role:   {
+          connect : {
+            id : data.roleId
+          }
         },
-      });
-    } catch (error) {
-      console.error("Error in createUser:", error);
-      throw error;
-    }
-  };
+        adress: data.adress,
+      },
+    });
+  } catch (error) {
+    console.error("Error in createUser:", error);
+    throw error;
+  }
+};
   
 
 export const getUserById = async (id : number) => {

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   markAttendanceController,
-  getStudentAttendanceController,
+  getUserAttendanceController,
   getAttendanceByDateController,
   updateAttendanceController,
   deleteAttendanceController,
@@ -9,8 +9,8 @@ import {
 
 const attendanceRouter = Router();
 
-attendanceRouter.post('/mark', markAttendanceController);
-attendanceRouter.get('/student/:studentId', getStudentAttendanceController);
+attendanceRouter.post('/', markAttendanceController);
+attendanceRouter.get('/user/:userId', getUserAttendanceController);
 attendanceRouter.get('/date', getAttendanceByDateController);
 attendanceRouter.put('/:id', updateAttendanceController);
 attendanceRouter.delete('/:id', deleteAttendanceController);

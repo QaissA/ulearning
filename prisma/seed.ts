@@ -23,6 +23,24 @@ async function main() {
     },
   });
 
+  const teacherRole = await prisma.role.upsert({
+    where: { name: "TEACHER" },
+    update: {},
+    create: {
+      name: "TEACHER",
+      description: "Teacher with class management permissions",
+    },
+  });
+
+  const adminStaffRole = await prisma.role.upsert({
+    where: { name: "ADMIN_STAFF" },
+    update: {},
+    create: {
+      name: "ADMIN_STAFF",
+      description: "Administrative staff handling school operations",
+    },
+  });
+
   // Seed users
   const users = [
     {
@@ -43,11 +61,29 @@ async function main() {
       verificationCode: null,
       isVerified: true,
     },
+    {
+      name: "Teacher User",
+      email: "teacher@example.com",
+      password: "password123",
+      roleId: teacherRole.id,
+      adress: "789 Teacher St, Teacher City",
+      verificationCode: null,
+      isVerified: true,
+    },
+    {
+      name: "Admin Staff User",
+      email: "adminstaff@example.com",
+      password: "password123",
+      roleId: adminStaffRole.id,
+      adress: "101 Admin St, Admin City",
+      verificationCode: null,
+      isVerified: true,
+    },
   ];
 
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    const createdUser = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: user.email },
       update: {},
       create: {
@@ -62,20 +98,29 @@ async function main() {
         updatedAt: new Date(),
       },
     });
+  }
 
-    // If the user is a student, create a related Student record
-    if (user.roleId === studentRole.id) {
-      await prisma.student.upsert({
-        where: { userId: createdUser.id },
-        update: {},
-        create: {
-          userId: createdUser.id,
-          gradeLevel: "Grade 10", // Example grade level, modify as needed
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
-    }
+  // Seed matieres (subjects)
+  const matieres = [
+    { name: "Mathematics", description: "Study of numbers and equations" },
+    { name: "Physics", description: "Study of matter and energy" },
+    { name: "Chemistry", description: "Study of substances and reactions" },
+    { name: "Biology", description: "Study of living organisms" },
+    { name: "History", description: "Study of past events" },
+    { name: "Geography", description: "Study of Earth's landscapes and environments" },
+    { name: "English", description: "Study of the English language" },
+    { name: "Computer Science", description: "Study of computers and programming" },
+  ];
+
+  for (const matiere of matieres) {
+    await prisma.matiere.upsert({
+      where: { name: matiere.name },
+      update: {},
+      create: {
+        name: matiere.name,
+        description: matiere.description,
+      },
+    });
   }
 
   console.log("Seeding completed successfully.");

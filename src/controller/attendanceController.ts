@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
   markAttendance,
-  getStudentAttendance,
+  getUserAttendance,  
   getAttendanceByDate,
   updateAttendance,
   deleteAttendance,
@@ -9,9 +9,14 @@ import {
 
 // Mark attendance
 export const markAttendanceController = async (req: Request, res: Response): Promise<void> => {
-  const { studentId, status } = req.body;
+  const { userId, status } = req.body;
   try {
-    const attendance = await markAttendance(Number(studentId), status);
+    if (!userId || !status) {
+      res.status(400).json({ error: "User ID and status are required" });
+      return;
+    }
+    
+    const attendance = await markAttendance(Number(userId), status);
     res.status(201).json(attendance);
   } catch (err) {
     const error = err as Error;
@@ -19,11 +24,16 @@ export const markAttendanceController = async (req: Request, res: Response): Pro
   }
 };
 
-// Get attendance for a specific student
-export const getStudentAttendanceController = async (req: Request, res: Response): Promise<void> => {
-  const { studentId } = req.params;
+// Get attendance for a specific user
+export const getUserAttendanceController = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params; 
   try {
-    const attendance = await getStudentAttendance(Number(studentId));
+    if (!userId) {
+      res.status(400).json({ error: "User ID is required" });
+      return;
+    }
+    
+    const attendance = await getUserAttendance(Number(userId));
     res.status(200).json(attendance);
   } catch (err) {
     const error = err as Error;
@@ -31,7 +41,7 @@ export const getStudentAttendanceController = async (req: Request, res: Response
   }
 };
 
-// Get attendance for all students on a specific date
+// Get attendance for all users on a specific date
 export const getAttendanceByDateController = async (req: Request, res: Response): Promise<void> => {
   const { date } = req.query;
   if (!date) {
@@ -48,12 +58,16 @@ export const getAttendanceByDateController = async (req: Request, res: Response)
   }
 };
 
-
 // Update attendance record
 export const updateAttendanceController = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const { status } = req.body;
   try {
+    if (!status) {
+      res.status(400).json({ error: "Status is required" });
+      return;
+    }
+
     const attendance = await updateAttendance(Number(id), status);
     res.status(200).json(attendance);
   } catch (err) {

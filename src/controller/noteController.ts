@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import * as noteService from "../services/noteService";
 
+// Create a new note
 export const createNote = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { studentId, matiereId, score } = req.body;
-    if (!studentId || !matiereId || score === undefined) {
+    const { userId, matiereId, score } = req.body; 
+    if (!userId || !matiereId || score === undefined) {
       res.status(400).json({ error: "Missing required fields" });
       return;
     }
     
-    const note = await noteService.createNote(studentId, matiereId, score);
+    const note = await noteService.createNote(userId, matiereId, score);
     res.status(201).json(note);
   } catch (error) {
     console.error(error);
@@ -17,6 +18,7 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// Get all notes
 export const getNotes = async (req: Request, res: Response) => {
   try {
     const notes = await noteService.getNotes();
@@ -27,10 +29,11 @@ export const getNotes = async (req: Request, res: Response) => {
   }
 };
 
-export const getNotesByStudent = async (req: Request, res: Response) => {
+// Get notes by user
+export const getNotesByUser = async (req: Request, res: Response) => { 
   try {
-    const { studentId } = req.params;
-    const notes = await noteService.getNotesByStudent(Number(studentId));
+    const { userId } = req.params; 
+    const notes = await noteService.getNotesByUser(Number(userId));
     res.json(notes);
   } catch (error) {
     console.error(error);
@@ -38,6 +41,7 @@ export const getNotesByStudent = async (req: Request, res: Response) => {
   }
 };
 
+// Update a note
 export const updateNote = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -56,6 +60,7 @@ export const updateNote = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// Delete a note
 export const deleteNote = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
