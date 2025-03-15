@@ -10,12 +10,12 @@ import loginRouter from "./loginRoutes";
 const router = express.Router();
 
 // Use the account creation routes
-router.use('/login', loginRouter);
-router.use('/users', userRouter);
-router.use('/attendance', attendanceRouter);
-router.use('/notes', notesRouter);
-router.use('/matieres', matiereRouter);
-router.use('/classes', classRouter);
-router.use('/timetable', timetableRouter);
+router.use("/login", loginRouter);
+router.use("/users", userRouter);
+router.use("/attendance", attendanceRouter);
+router.use("/notes", notesRouter);
+router.use("/matieres", matiereRouter);
+router.use("/classes", classRouter);
+router.use("/timetable", timetableRouter);
 
 export default router;

@@ -12,8 +12,8 @@ model User {
   name             String   @db.VarChar(255)
   email            String   @unique(map: "User_email_key") @db.VarChar(255)
   password         String   @db.VarChar(255)
-  roleId           Int
-  role             Role     @relation(fields: [roleId], references: [id])
+  roleId           Int?
+  role             Role?     @relation(fields: [roleId], references: [id])
   adress           String?  @db.VarChar(255)
   verificationCode String?  @db.VarChar(255)
   isVerified       Boolean  @default(false)
