@@ -4,7 +4,8 @@ import {
   getTimetables, 
   getTimetableById, 
   updateTimetable, 
-  deleteTimetable 
+  deleteTimetable, 
+  restoreTimetable
 } from "../controller/timetableController";
 
 const timetableRouter = express.Router();
@@ -14,5 +15,6 @@ timetableRouter.get("/", getTimetables);
 timetableRouter.get("/:id", getTimetableById);
 timetableRouter.put("/:id", updateTimetable);
 timetableRouter.delete("/:id", deleteTimetable);
+timetableRouter.put("/:id/restore", restoreTimetable);
 
 export default timetableRouter;

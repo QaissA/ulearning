@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt"
 
 interface userCreate {
@@ -8,7 +8,6 @@ interface userCreate {
   roleId: number; 
   adress?: string
 }
-
 
 const prisma = new PrismaClient();
 const saltRounds = 10;
@@ -28,6 +27,7 @@ export const createUser = async (data: userCreate) => {
           }
         },
         adress: data.adress,
+        isDeleted: false,
       },
     });
   } catch (error) {
@@ -37,13 +37,21 @@ export const createUser = async (data: userCreate) => {
 };
   
 
-export const getUserById = async (id : number) => {
-    return await prisma.user.findUnique({
-        where : {id},
-    })
-}   
+export const getUserById = async (id: number) => {
+  return await prisma.user.findUnique({
+    where: { id, isDeleted: false },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      adress: true,
+      isDeleted: true,
+    },
+  });
+}; 
 
-export const updateUser = async(id: number, data : userCreate) => {
+export const updateUser = async(id: number, data: userCreate) => {
     let updatedData = {...data};
 
     if(data.password) {
@@ -57,8 +65,22 @@ export const updateUser = async(id: number, data : userCreate) => {
     })
 }
 
-export const deleteUser = async (id : number) => {
-    return prisma.user.delete({
-        where : {id},
-    })
-}
+// Soft delete user
+export const softDeleteUser = async (id: number) => {
+  return prisma.user.update({
+    where: { id },
+    data: {
+      isDeleted: true,
+    },
+  });
+};
+
+// function to restore a deleted user
+export const restoreUser = async (id: number) => {
+  return prisma.user.update({
+    where: { id },
+    data: {
+      isDeleted: false,
+    },
+  });
+};

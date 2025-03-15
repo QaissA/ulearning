@@ -60,12 +60,25 @@ export const updateNote = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Delete a note
+
+// Soft delete a note
 export const deleteNote = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await noteService.deleteNote(Number(id));
-    res.status(204).send();
+    res.status(200).json({ message: "Note soft deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Restore a soft-deleted note
+export const restoreNote = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await noteService.restoreNote(Number(id));
+    res.status(200).json({ message: "Note restored successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

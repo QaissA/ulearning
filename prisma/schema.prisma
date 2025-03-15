@@ -19,6 +19,7 @@ model User {
   isVerified       Boolean  @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  isDeleted        Boolean  @default(false)
 
   // Relation to Class
   classId Int?  
@@ -39,6 +40,7 @@ model Attendance {
   status    String   @db.VarChar(10) // "PRESENT" or "ABSENT"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model Note {
@@ -50,6 +52,7 @@ model Note {
   score      Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
 }
 
 model Matiere {
@@ -58,6 +61,7 @@ model Matiere {
   description String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 
   // Relations
   notes          Note[]
@@ -70,6 +74,7 @@ model Class {
   description String?   @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
 
   // Relations
   users          User[] 
@@ -96,4 +101,5 @@ model EmploiDuTemps {
   heureFin    String   @db.VarChar(5)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 }

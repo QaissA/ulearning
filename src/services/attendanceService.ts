@@ -11,6 +11,7 @@ export const markAttendance = async (userId: number, status: 'PRESENT' | 'ABSENT
         connect: { id: userId },
       },
       status,
+      isDeleted: false,
     },
   });
 };
@@ -18,7 +19,7 @@ export const markAttendance = async (userId: number, status: 'PRESENT' | 'ABSENT
 // Get attendance for a specific user
 export const getUserAttendance = async (userId: number) => {
   return await prisma.attendance.findMany({
-    where: { userId },
+    where: { userId, isDeleted: false },
     orderBy: { date: 'desc' },
   });
 };
@@ -36,6 +37,7 @@ export const getAttendanceByDate = async (date: string) => {
         gte: parsedDate,
         lt: endOfDay,
       },
+      isDeleted: false,
     },
     include: { user: { select: { id: true, name: true } } },
   });
@@ -44,14 +46,23 @@ export const getAttendanceByDate = async (date: string) => {
 // Update attendance record
 export const updateAttendance = async (id: number, status: 'PRESENT' | 'ABSENT') => {
   return await prisma.attendance.update({
-    where: { id },
+    where: { id, isDeleted: false, },
     data: { status },
   });
 };
 
-// Delete attendance record
+// Soft delete attendance record
 export const deleteAttendance = async (id: number) => {
-  return await prisma.attendance.delete({
+  return await prisma.attendance.update({
     where: { id },
+    data: { isDeleted: true },
+  });
+};
+
+// Restore a soft-deleted attendance record
+export const restoreAttendance = async (id: number) => {
+  return await prisma.attendance.update({
+    where: { id },
+    data: { isDeleted: false },
   });
 };

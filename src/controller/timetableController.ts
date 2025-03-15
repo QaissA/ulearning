@@ -6,10 +6,8 @@ export const createTimetable = async (req: Request, res: Response) => {
     const newTimetable = await timetableService.createTimetable(req.body);
     res.status(201).json(newTimetable);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (error as Error).message });
   }
-  
 };
 
 export const getTimetables = async (_req: Request, res: Response) => {
@@ -17,13 +15,11 @@ export const getTimetables = async (_req: Request, res: Response) => {
     const timetables = await timetableService.getTimetables();
     res.status(200).json(timetables);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (error as Error).message });
   }
-  
 };
 
-export const getTimetableById = async (req: Request, res: Response): Promise<void> => {
+export const getTimetableById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const timetable = await timetableService.getTimetableById(Number(id));
@@ -35,10 +31,8 @@ export const getTimetableById = async (req: Request, res: Response): Promise<voi
 
     res.status(200).json(timetable);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (error as Error).message });
   }
-  
 };
 
 export const updateTimetable = async (req: Request, res: Response) => {
@@ -46,19 +40,24 @@ export const updateTimetable = async (req: Request, res: Response) => {
     const updatedTimetable = await timetableService.updateTimetable(Number(req.params.id), req.body);
     res.status(200).json(updatedTimetable);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (error as Error).message });
   }
-  
 };
 
 export const deleteTimetable = async (req: Request, res: Response) => {
   try {
     await timetableService.deleteTimetable(Number(req.params.id));
-    res.status(204).send();
+    res.status(200).json({ message: "Timetable deleted successfully" });
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (error as Error).message });
   }
-  
+};
+
+export const restoreTimetable = async (req: Request, res: Response) => {
+  try {
+    await timetableService.restoreTimetable(Number(req.params.id));
+    res.status(200).json({ message: "Timetable restored successfully" });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 };

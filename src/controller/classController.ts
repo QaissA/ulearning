@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { classService } from "../services/classService";
 
-// Get all classes
+// Get all non-deleted classes
 export const getAllClasses = async (req: Request, res: Response): Promise<void> => {
   try {
     const classes = await classService.getAllClasses();
@@ -23,7 +23,7 @@ export const getClassById = async (req: Request, res: Response): Promise<void> =
 
     const classData = await classService.getClassById(id);
     if (!classData) {
-      res.status(404).json({ error: "Class not found" });
+      res.status(404).json({ error: "Class not found or has been deleted" });
       return;
     }
 
@@ -70,7 +70,7 @@ export const updateClass = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// Delete a class
+// Soft delete a class
 export const deleteClass = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = Number(req.params.id);
@@ -80,7 +80,24 @@ export const deleteClass = async (req: Request, res: Response): Promise<void> =>
     }
 
     await classService.deleteClass(id);
-    res.status(200).json({ message: "Class deleted successfully" });
+    res.status(200).json({ message: "Class soft deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Restore a soft-deleted class
+export const restoreClass = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      res.status(400).json({ error: "Invalid class ID" });
+      return;
+    }
+
+    await classService.restoreClass(id);
+    res.status(200).json({ message: "Class restored successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

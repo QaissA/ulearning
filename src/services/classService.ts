@@ -5,37 +5,42 @@ const prisma = new PrismaClient();
 export const classService = {
   getAllClasses: async () => {
     return await prisma.class.findMany({
-      include: {
-        users: true,
-      },
+      where: { isDeleted: false },
+      include: { users: true },
     });
   },
 
   getClassById: async (id: number) => {
     return await prisma.class.findUnique({
-      where: { id },
-      include: {
-        users: true,
-      },
+      where: { id, isDeleted: false },
+      include: { users: true },
     });
   },
 
   createClass: async (name: string, description?: string) => {
     return await prisma.class.create({
-      data: { name, description },
+      data: { name, description, isDeleted: false },
     });
   },
 
   updateClass: async (id: number, name?: string, description?: string) => {
     return await prisma.class.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: { name, description },
     });
   },
 
   deleteClass: async (id: number) => {
-    return await prisma.class.delete({
+    return await prisma.class.update({
       where: { id },
+      data: { isDeleted: true },
+    });
+  },
+
+  restoreClass: async (id: number) => {
+    return await prisma.class.update({
+      where: { id },
+      data: { isDeleted: false },
     });
   },
 };
