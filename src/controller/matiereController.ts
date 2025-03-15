@@ -58,7 +58,18 @@ export const deleteMatiere = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     await matiereService.deleteMatiere(id);
-    res.json({ message: "Matiere deleted successfully" });
+    res.json({ message: "Matiere soft deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const restoreMatiere = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    await matiereService.restoreMatiere(id);
+    res.json({ message: "Matiere restored successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

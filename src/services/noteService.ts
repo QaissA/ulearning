@@ -5,21 +5,22 @@ const prisma = new PrismaClient();
 // Create a new note
 export const createNote = async (userId: number, matiereId: number, score: number) => {
   return await prisma.note.create({
-    data: { userId, matiereId, score }, 
+    data: { userId, matiereId, score, isDeleted: false }, 
   });
 };
 
-// Get all notes
+// Get all active notes (excluding soft-deleted ones)
 export const getNotes = async () => {
   return await prisma.note.findMany({
+    where: { isDeleted: false },
     include: { user: true, matiere: true }, 
   });
 };
 
-// Get notes by user (previously student)
+// Get notes by user (excluding soft-deleted ones)
 export const getNotesByUser = async (userId: number) => { 
   return await prisma.note.findMany({
-    where: { userId }, 
+    where: { userId, isDeleted: false }, 
     include: { user: true, matiere: true },
   });
 };
@@ -27,14 +28,23 @@ export const getNotesByUser = async (userId: number) => {
 // Update a note
 export const updateNote = async (id: number, score: number) => {
   return await prisma.note.update({
-    where: { id },
+    where: { id, isDeleted: false },
     data: { score },
   });
 };
 
-// Delete a note
+// Soft delete a note (mark as deleted)
 export const deleteNote = async (id: number) => {
-  return await prisma.note.delete({
+  return await prisma.note.update({
     where: { id },
+    data: { isDeleted: true },
+  });
+};
+
+// Restore a soft-deleted note
+export const restoreNote = async (id: number) => {
+  return await prisma.note.update({
+    where: { id },
+    data: { isDeleted: false },
   });
 };

@@ -5,6 +5,7 @@ import {
   getAttendanceByDate,
   updateAttendance,
   deleteAttendance,
+  restoreAttendance,
 } from "../services/attendanceService";
 
 // Mark attendance
@@ -85,5 +86,17 @@ export const deleteAttendanceController = async (req: Request, res: Response): P
   } catch (err) {
     const error = err as Error;
     res.status(500).json({ error: error.message });
+  }
+};
+
+// Restore attendance record
+export const restoreAttendanceController = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const restoredAttendance = await restoreAttendance(Number(id));
+    res.status(200).json(restoredAttendance);
+  } catch (err) {
+    const error = err as Error;
+    res.status(500).json({ error: "Error restoring attendance record", details: error.message });
   }
 };

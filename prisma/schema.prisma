@@ -19,6 +19,7 @@ model User {
   isVerified       Boolean  @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  isDeleted        Boolean  @default(false)
 
   // Relation to Class
   classId Int?  
@@ -27,6 +28,8 @@ model User {
   // Attendance & Notes (Only for students)
   attendances Attendance[]
   notes       Note[]
+
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Attendance {
@@ -37,6 +40,7 @@ model Attendance {
   status    String   @db.VarChar(10) // "PRESENT" or "ABSENT"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model Note {
@@ -48,6 +52,7 @@ model Note {
   score      Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
 }
 
 model Matiere {
@@ -56,9 +61,11 @@ model Matiere {
   description String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 
   // Relations
-  notes  Note[]
+  notes          Note[]
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Class {
@@ -67,14 +74,32 @@ model Class {
   description String?   @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
 
   // Relations
-  users       User[] // A class has multiple users (students, teachers)
+  users          User[] 
+  emploisDuTemps EmploiDuTemps[]
 }
 
 model Role {
   id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(50) // "STUDENT", "TEACHER", "ADMIN", etc.
+  name        String   @unique @db.VarChar(50)
   description String?  @db.VarChar(255) 
   users       User[]
+}
+
+model EmploiDuTemps {
+  id          Int      @id @default(autoincrement())
+  classId     Int
+  class       Class    @relation(fields: [classId], references: [id])
+  matiereId   Int
+  matiere     Matiere  @relation(fields: [matiereId], references: [id])
+  teacherId   Int
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  day         String   @db.VarChar(20) 
+  heureDebut  String   @db.VarChar(5)
+  heureFin    String   @db.VarChar(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { registerUserService, loginUserService } from "../services/authService";
+import { loginUserService } from "../services/authService";
+import { createUser } from "../services/userService";
 
 export const loginUser = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -10,3 +11,12 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
     res.status(401).json({ error: error.message });
   }
 };
+
+export const registerUser = async (req : Request, res : Response) => {
+    try {
+        const userAdded = await createUser(req.body);
+        res.status(201).json(userAdded);
+    } catch (error) {
+        res.status(500).json({ error : "Error creating user", details : error});
+    }
+}
