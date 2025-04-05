@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUserById, updateUser, softDeleteUser, restoreUser } from "../services/userService";
+import { getUserById, updateUser, softDeleteUser, restoreUser, getUsersByRole } from "../services/userService";
 
 export const getUser = async (req : Request, res : Response) => {
     try {
@@ -9,6 +9,17 @@ export const getUser = async (req : Request, res : Response) => {
         res.status(500).json({ error : "Error getting user", details : error});
     }
 }
+
+export const getUsersByRoleController = async (req: Request, res: Response) => {
+    try {
+        const { roleName } = req.params;
+        const users = await getUsersByRole(roleName);
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching users by role", details: error });
+    }
+};
+
 
 export const ModifyUser = async (req : Request, res : Response) => {
     try {
