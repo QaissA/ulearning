@@ -5,6 +5,7 @@ import {
   softDeleteUser,
   restoreUser,
   getAllUsers,
+  getUsersByRole
 } from "../services/userService";
 
 export const getUser = async (req: Request, res: Response) => {
@@ -16,14 +17,25 @@ export const getUser = async (req: Request, res: Response) => {
   }
 };
 
-export const ModifyUser = async (req: Request, res: Response) => {
-  try {
-    const userUpdated = await updateUser(parseInt(req.params.id), req.body);
-    res.status(200).json(userUpdated);
-  } catch (error) {
-    res.status(500).json({ error: "Error updating user", details: error });
-  }
+export const getUsersByRoleController = async (req: Request, res: Response) => {
+    try {
+        const { roleName } = req.params;
+        const users = await getUsersByRole(roleName);
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching users by role", details: error });
+    }
 };
+
+
+export const ModifyUser = async (req : Request, res : Response) => {
+    try {
+        const userUpdated = await updateUser(parseInt(req.params.id), req.body);
+        res.status(200).json(userUpdated);
+    } catch (error) {
+        res.status(500).json({ error : "Error updating user", details : error});
+    }
+}
 
 export const removeUser = async (req: Request, res: Response) => {
   try {

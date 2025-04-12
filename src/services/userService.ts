@@ -55,6 +55,25 @@ export const createUser = async (data: userCreate) => {
   }
 };
 
+export const getUsersByRole = async (roleName: string) => {
+  return await prisma.user.findMany({
+      where: {
+          role: {
+              name: roleName
+          },
+          isDeleted: false
+      },
+      select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          adress: true
+      }
+  });
+};
+
+
 export const getUserById = async (id: number, isDeleted: boolean = false) => {
   return await prisma.user.findUnique({
     where: { id },
