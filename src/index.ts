@@ -9,7 +9,7 @@ const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:3001", // Allow your frontend URL
+  origin: process.env.FRONTEND_URL || "http://localhost:3000", // Allow your frontend URL
   credentials: true, // Allow credentials (cookies, authorization headers, etc)
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers

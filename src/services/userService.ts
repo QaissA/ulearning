@@ -5,7 +5,7 @@ interface userCreate {
   name: string;
   email: string;
   password: string;
-  roleId?: number;
+  roleId: number;
   adress?: string;
 }
 
@@ -27,13 +27,13 @@ export const createUser = async (data: userCreate) => {
 
     const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-    // Find the STUDENT role
-    const studentRole = await prisma.role.findUnique({
-      where: { name: "STUDENT" },
+    // Verify that the role exists
+    const role = await prisma.role.findUnique({
+      where: { id: data.roleId },
     });
 
-    if (!studentRole) {
-      throw new Error("Student role not found");
+    if (!role) {
+      throw new Error("Invalid role ID");
     }
 
     return await prisma.user.create({
@@ -41,7 +41,7 @@ export const createUser = async (data: userCreate) => {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        roleId: studentRole.id, // Default to student role
+        roleId: data.roleId,
         adress: data.adress,
         isDeleted: false,
       },
@@ -55,16 +55,16 @@ export const createUser = async (data: userCreate) => {
   }
 };
 
-export const getUserById = async (id: number) => {
+export const getUserById = async (id: number, isDeleted: boolean = false) => {
   return await prisma.user.findUnique({
-    where: { id, isDeleted: false },
+    where: { id },
     select: {
       id: true,
       name: true,
       email: true,
       role: true,
       adress: true,
-      isDeleted: true,
+      isDeleted: isDeleted,
     },
   });
 };
@@ -101,4 +101,37 @@ export const restoreUser = async (id: number) => {
       isDeleted: false,
     },
   });
+};
+
+// Get all users with option to include soft-deleted ones
+export const getAllUsers = async (
+  includeDeleted: boolean = false,
+  page: number,
+  limit: number
+) => {
+  const skip = (page - 1) * limit;
+
+  const users = await prisma.user.findMany({
+    where: includeDeleted ? { isDeleted: true } : { isDeleted: false },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      adress: true,
+      isDeleted: true,
+      class: true,
+    },
+    skip,
+    take: limit,
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  const totalCount = await prisma.user.count({
+    where: includeDeleted ? { isDeleted: true } : { isDeleted: false },
+  });
+
+  return { users, totalCount };
 };

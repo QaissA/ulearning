@@ -5,123 +5,132 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create roles
-  const adminRole = await prisma.role.upsert({
-    where: { name: "ADMIN" },
-    update: {},
-    create: {
-      name: "ADMIN",
-      description: "Administrator with full access",
-    },
-  });
+  const roles = await Promise.all([
+    prisma.role.upsert({
+      where: { name: "ADMIN" },
+      update: {},
+      create: { name: "ADMIN", description: "Administrator with full access" },
+    }),
+    prisma.role.upsert({
+      where: { name: "STUDENT" },
+      update: {},
+      create: { name: "STUDENT", description: "Regular student user" },
+    }),
+    prisma.role.upsert({
+      where: { name: "TEACHER" },
+      update: {},
+      create: {
+        name: "TEACHER",
+        description: "Teacher with class management permissions",
+      },
+    }),
+    prisma.role.upsert({
+      where: { name: "ADMIN_STAFF" },
+      update: {},
+      create: {
+        name: "ADMIN_STAFF",
+        description: "Administrative staff handling school operations",
+      },
+    }),
+  ]);
 
-  const studentRole = await prisma.role.upsert({
-    where: { name: "STUDENT" },
-    update: {},
-    create: {
-      name: "STUDENT",
-      description: "Regular student user",
-    },
-  });
+  const [adminRole, studentRole, teacherRole, adminStaffRole] = roles;
 
-  const teacherRole = await prisma.role.upsert({
-    where: { name: "TEACHER" },
-    update: {},
-    create: {
-      name: "TEACHER",
-      description: "Teacher with class management permissions",
-    },
-  });
+  // Create classes
+  const classes = await Promise.all([
+    prisma.class.upsert({
+      where: { name: "Class A" },
+      update: {},
+      create: { name: "Class A", description: "First grade class" },
+    }),
+    prisma.class.upsert({
+      where: { name: "Class B" },
+      update: {},
+      create: { name: "Class B", description: "Second grade class" },
+    }),
+  ]);
 
-  const adminStaffRole = await prisma.role.upsert({
-    where: { name: "ADMIN_STAFF" },
-    update: {},
-    create: {
-      name: "ADMIN_STAFF",
-      description: "Administrative staff handling school operations",
-    },
-  });
+  const [classA, classB] = classes;
 
   // Seed users
-  const users = [
+  const usersData = [
     {
       name: "Admin User",
       email: "admin@example.com",
-      password: "password123", // Will be hashed
       roleId: adminRole.id,
-      adress: "123 Admin St, Admin City",
-      verificationCode: null,
+      adress: "123 Admin St",
       isVerified: true,
     },
     {
       name: "Student User",
       email: "student@example.com",
-      password: "password123",
       roleId: studentRole.id,
-      adress: "456 Student St, Student City",
-      verificationCode: null,
+      adress: "456 Student St",
+      classId: classA.id,
       isVerified: true,
     },
     {
       name: "Teacher User",
       email: "teacher@example.com",
-      password: "password123",
       roleId: teacherRole.id,
-      adress: "789 Teacher St, Teacher City",
-      verificationCode: null,
+      adress: "789 Teacher St",
       isVerified: true,
     },
     {
       name: "Admin Staff User",
       email: "adminstaff@example.com",
-      password: "password123",
       roleId: adminStaffRole.id,
-      adress: "101 Admin St, Admin City",
-      verificationCode: null,
+      adress: "101 Admin St",
       isVerified: true,
     },
   ];
 
-  for (const user of users) {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+  for (const user of usersData) {
+    const hashedPassword = await bcrypt.hash("password123", 10);
     await prisma.user.upsert({
       where: { email: user.email },
       update: {},
-      create: {
-        name: user.name,
-        email: user.email,
-        password: hashedPassword,
-        roleId: user.roleId,
-        adress: user.adress,
-        verificationCode: user.verificationCode,
-        isVerified: user.isVerified,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      create: { ...user, password: hashedPassword },
     });
   }
 
-  // Seed matieres (subjects)
-  const matieres = [
-    { name: "Mathematics", description: "Study of numbers and equations" },
-    { name: "Physics", description: "Study of matter and energy" },
-    { name: "Chemistry", description: "Study of substances and reactions" },
-    { name: "Biology", description: "Study of living organisms" },
-    { name: "History", description: "Study of past events" },
-    { name: "Geography", description: "Study of Earth's landscapes and environments" },
-    { name: "English", description: "Study of the English language" },
-    { name: "Computer Science", description: "Study of computers and programming" },
-  ];
-
-  for (const matiere of matieres) {
-    await prisma.matiere.upsert({
-      where: { name: matiere.name },
+  // Seed subjects
+  const matieres = await Promise.all([
+    prisma.matiere.upsert({
+      where: { name: "Mathematics" },
       update: {},
-      create: {
-        name: matiere.name,
-        description: matiere.description,
+      create: { name: "Mathematics", description: "Study of numbers" },
+    }),
+    prisma.matiere.upsert({
+      where: { name: "Physics" },
+      update: {},
+      create: { name: "Physics", description: "Study of matter" },
+    }),
+  ]);
+
+  const [math, physics] = matieres;
+
+  // Seed schedule (EmploiDuTemps)
+  await prisma.emploiDuTemps.createMany({
+    data: [
+      {
+        classId: classA.id,
+        matiereId: math.id,
+        teacherId: 3,
+        day: "Monday",
+        heureDebut: "08:00",
+        heureFin: "10:00",
       },
-    });
-  }
+      {
+        classId: classB.id,
+        matiereId: physics.id,
+        teacherId: 3,
+        day: "Tuesday",
+        heureDebut: "10:00",
+        heureFin: "12:00",
+      },
+    ],
+  });
 
   console.log("Seeding completed successfully.");
 }

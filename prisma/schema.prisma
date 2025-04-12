@@ -86,6 +86,25 @@ model Role {
   name        String   @unique @db.VarChar(50)
   description String?  @db.VarChar(255) 
   users       User[]
+  rolePermissions RolePermission[]
+}
+
+model Permission {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
+  description String?           @db.VarChar(255)
+  key         String            @unique @db.VarChar(100) // e.g., "users:read", "users:write"
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
 }
 
 model EmploiDuTemps {
