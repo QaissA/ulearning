@@ -7,14 +7,15 @@ import {
   deleteTimetable, 
   restoreTimetable
 } from "../controller/timetableController";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 const timetableRouter = express.Router();
 
-timetableRouter.post("/", createTimetable);
-timetableRouter.get("/", getTimetables);
-timetableRouter.get("/:id", getTimetableById);
-timetableRouter.put("/:id", updateTimetable);
-timetableRouter.delete("/:id", deleteTimetable);
-timetableRouter.put("/:id/restore", restoreTimetable);
+timetableRouter.post("/", authenticateToken,createTimetable);
+timetableRouter.get("/", authenticateToken,getTimetables);
+timetableRouter.get("/:id", authenticateToken, getTimetableById);
+timetableRouter.put("/:id", authenticateToken, updateTimetable);
+timetableRouter.delete("/:id", authenticateToken,deleteTimetable);
+timetableRouter.put("/:id/restore", authenticateToken,restoreTimetable);
 
 export default timetableRouter;

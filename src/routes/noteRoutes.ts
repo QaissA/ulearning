@@ -1,13 +1,14 @@
 import express from "express";
 import * as noteController from "../controller/noteController";
+import { authenticateToken } from "../middleware/authMiddleware";
 
 const notesRouter = express.Router();
 
-notesRouter.post("/", noteController.createNote);
-notesRouter.get("/", noteController.getNotes);
-notesRouter.get("/:userId", noteController.getNotesByUser);
-notesRouter.put("/:id", noteController.updateNote);
-notesRouter.delete("/:id", noteController.deleteNote);
-notesRouter.put("/:id/restore", noteController.restoreNote);
+notesRouter.post("/", authenticateToken, noteController.createNote);
+notesRouter.get("/", authenticateToken, noteController.getNotes);
+notesRouter.get("/:userId", authenticateToken, noteController.getNotesByUser);
+notesRouter.put("/:id", authenticateToken, noteController.updateNote);
+notesRouter.delete("/:id", authenticateToken, noteController.deleteNote);
+notesRouter.put("/:id/restore", authenticateToken, noteController.restoreNote);
 
 export default notesRouter;

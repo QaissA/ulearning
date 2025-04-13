@@ -6,13 +6,14 @@ import {
   updateStudentController,
   deleteStudentController,
 } from '../controller/studentController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const studentsRouter = Router();
 
-studentsRouter.post('/', createStudentController);
-studentsRouter.get('/', getStudentsController);
-studentsRouter.get('/:id', getStudentByIdController);
-studentsRouter.put('/:id', updateStudentController);
-studentsRouter.delete('/:id', deleteStudentController);
+studentsRouter.post('/', authenticateToken,createStudentController);
+studentsRouter.get('/', authenticateToken, getStudentsController);
+studentsRouter.get('/:id', authenticateToken, getStudentByIdController);
+studentsRouter.put('/:id', authenticateToken, updateStudentController);
+studentsRouter.delete('/:id', authenticateToken, deleteStudentController);
 
 export default studentsRouter;

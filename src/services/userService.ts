@@ -55,13 +55,15 @@ export const createUser = async (data: userCreate) => {
   }
 };
 
-export const getUsersByRole = async (roleName: string) => {
-  return await prisma.user.findMany({
+export const getUsersByRole = async (roleName: string, includeDeleted : boolean = false, page : number, limit : number) => {
+  const skip = (page - 1) * limit;
+  const users = await prisma.user.findMany({
       where: {
-          role: {
-              name: roleName
-          },
-          isDeleted: false
+        role: {
+          name: roleName
+      },
+      isDeleted: includeDeleted,
+      
       },
       select: {
           id: true,
@@ -69,8 +71,19 @@ export const getUsersByRole = async (roleName: string) => {
           email: true,
           role: true,
           adress: true
+      },
+      skip,
+      take: limit,
+      orderBy : {
+        name: "asc",
       }
   });
+
+  const totalCount = await prisma.user.count({
+    where: includeDeleted ? { isDeleted: true } : { isDeleted: false },
+  });
+
+    return {users, totalCount};
 };
 
 

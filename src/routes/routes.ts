@@ -6,6 +6,7 @@ import matiereRouter from "./matiereRoutes";
 import classRouter from "./classRoutes";
 import timetableRouter from "./timetableRoutes";
 import loginRouter from "./loginRoutes";
+import PermissionsRouter from "./permissionsRoutes";
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use("/notes", notesRouter);
 router.use("/matieres", matiereRouter);
 router.use("/classes", classRouter);
 router.use("/timetable", timetableRouter);
+router.use('/permissions', PermissionsRouter)
 
 export default router;
