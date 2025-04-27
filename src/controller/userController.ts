@@ -5,7 +5,7 @@ import {
   softDeleteUser,
   restoreUser,
   getAllUsers,
-  getUsersByRole
+  getUsersByRole,
 } from "../services/userService";
 import { read } from "fs";
 
@@ -19,31 +19,31 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const getUsersByRoleController = async (req: Request, res: Response) => {
-    try {
-
-        const includeDeleted = req.query.includeDeleted === "true";
-        const { roleName } = req.params;
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const users = await getUsersByRole(roleName, includeDeleted, page, limit);
-        res.status(200).json({
-          users,
-          pagination : {}
-        });
-    } catch (error) {
-        res.status(500).json({ error: "Error fetching users by role", details: error });
-    }
+  try {
+    const includeDeleted = req.query.includeDeleted === "true";
+    const { roleName } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const users = await getUsersByRole(roleName, includeDeleted, page, limit);
+    res.status(200).json({
+      users,
+      pagination: {},
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error fetching users by role", details: error });
+  }
 };
 
-
-export const ModifyUser = async (req : Request, res : Response) => {
-    try {
-        const userUpdated = await updateUser(parseInt(req.params.id), req.body);
-        res.status(200).json(userUpdated);
-    } catch (error) {
-        res.status(500).json({ error : "Error updating user", details : error});
-    }
-}
+export const ModifyUser = async (req: Request, res: Response) => {
+  try {
+    const userUpdated = await updateUser(parseInt(req.params.id), req.body);
+    res.status(200).json(userUpdated);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating user", details: error });
+  }
+};
 
 export const removeUser = async (req: Request, res: Response) => {
   try {
@@ -64,7 +64,6 @@ export const restoreDeletedUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error restoring user", details: error });
   }
 };
-
 export const getAllUsersController = async (req: Request, res: Response) => {
   try {
     const includeDeleted = req.query.includeDeleted === "true";

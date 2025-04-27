@@ -55,37 +55,40 @@ export const createUser = async (data: userCreate) => {
   }
 };
 
-export const getUsersByRole = async (roleName: string, includeDeleted : boolean = false, page : number, limit : number) => {
+export const getUsersByRole = async (
+  roleName: string,
+  includeDeleted: boolean = false,
+  page: number,
+  limit: number
+) => {
   const skip = (page - 1) * limit;
   const users = await prisma.user.findMany({
-      where: {
-        role: {
-          name: roleName
+    where: {
+      role: {
+        name: roleName,
       },
       isDeleted: includeDeleted,
-      
-      },
-      select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          adress: true
-      },
-      skip,
-      take: limit,
-      orderBy : {
-        name: "asc",
-      }
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      adress: true,
+    },
+    skip,
+    take: limit,
+    orderBy: {
+      name: "asc",
+    },
   });
 
   const totalCount = await prisma.user.count({
     where: includeDeleted ? { isDeleted: true } : { isDeleted: false },
   });
 
-    return {users, totalCount};
+  return { users, totalCount };
 };
-
 
 export const getUserById = async (id: number, isDeleted: boolean = false) => {
   return await prisma.user.findUnique({
