@@ -7,14 +7,15 @@ import {
   deleteAttendanceController,
   restoreAttendanceController,
 } from '../controller/attendanceController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const attendanceRouter = Router();
 
-attendanceRouter.post('/', markAttendanceController);
-attendanceRouter.get('/user/:userId', getUserAttendanceController);
-attendanceRouter.get('/date', getAttendanceByDateController);
-attendanceRouter.put('/:id', updateAttendanceController);
-attendanceRouter.delete('/:id', deleteAttendanceController);
-attendanceRouter.put('/restore/:id', restoreAttendanceController);
+attendanceRouter.post('/', authenticateToken, markAttendanceController);
+attendanceRouter.get('/user/:userId', authenticateToken, getUserAttendanceController);
+attendanceRouter.get('/date', authenticateToken, getAttendanceByDateController);
+attendanceRouter.put('/:id', authenticateToken, updateAttendanceController);
+attendanceRouter.delete('/:id', authenticateToken, deleteAttendanceController);
+attendanceRouter.put('/restore/:id', authenticateToken, restoreAttendanceController);
 
 export default attendanceRouter;

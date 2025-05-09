@@ -9,13 +9,20 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 // Service for logging in a user
 export const loginUserService = async (email: string, password: string) => {
-  // Find the user by email
+  // Find the user by email and include role information
   const user = await prisma.user.findUnique({
     where: { email },
+    include: {
+      role: true,
+    },
   });
 
   if (!user) {
     throw new Error("User not found");
+  }
+
+  if (!user.role) {
+    throw new Error("User has no role assigned");
   }
 
   // Compare the password
@@ -24,10 +31,22 @@ export const loginUserService = async (email: string, password: string) => {
     throw new Error("Invalid credentials");
   }
 
-  // Generate a JWT
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-    expiresIn: "3000h",
-  });
+  // Generate a JWT with role information
+  const token = jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role.name,
+      roleId: user.roleId,
+    },
+    JWT_SECRET,
+    {
+      expiresIn: "3000h",
+    }
+  );
 
-  return { token, user };
+  // Remove sensitive information before sending user data
+  const { password: _, ...userWithoutPassword } = user;
+
+  return { token, user: userWithoutPassword };
 };
