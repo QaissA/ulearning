@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import {
   getUserById,
-  updateUser,
   softDeleteUser,
   restoreUser,
   getAllUsers,
   getUsersByRole,
+  updateUserProfile,
+  updateUserPassword,
 } from "../services/userService";
 import { read } from "fs";
 
@@ -33,15 +34,6 @@ export const getUsersByRoleController = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ error: "Error fetching users by role", details: error });
-  }
-};
-
-export const ModifyUser = async (req: Request, res: Response) => {
-  try {
-    const userUpdated = await updateUser(parseInt(req.params.id), req.body);
-    res.status(200).json(userUpdated);
-  } catch (error) {
-    res.status(500).json({ error: "Error updating user", details: error });
   }
 };
 
@@ -79,4 +71,27 @@ export const getAllUsersController = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error getting users", details: error });
   }
 };
-  
+
+export const updateUserProfileController = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const updatedUser = await updateUserProfile(userId, req.body);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating profile", details: error });
+  }
+};
+
+export const updateUserPasswordController = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Current and new password are required" });
+    }
+    const updatedUser = await updateUserPassword(userId, currentPassword, newPassword);
+    res.status(200).json({ message: "Password updated successfully", user: updatedUser });
+  } catch (error) {
+    res.status(400).json({ error: "Error updating password", details: error instanceof Error ? error.message : error });
+  }
+};

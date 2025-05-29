@@ -1,10 +1,11 @@
 import {
   removeUser,
-  ModifyUser,
   getUser,
   restoreDeletedUser,
   getAllUsersController,
   getUsersByRoleController,
+  updateUserProfileController,
+  updateUserPasswordController,
 } from "../controller/userController";
 
 import express from "express";
@@ -16,8 +17,15 @@ const userRouter = express.Router();
 userRouter.get("/", authenticateToken, getAllUsersController);
 userRouter.get("/:id", authenticateToken, getUser);
 userRouter.get("/role/:roleName", authenticateToken, getUsersByRoleController);
-userRouter.put("/:id", authenticateToken, ModifyUser);
 userRouter.delete("/:id", authenticateToken, removeUser);
 userRouter.put("/restore/:id", authenticateToken, restoreDeletedUser);
+// Update profile info (no password)
+userRouter.put("/profile/:id", authenticateToken, (req, res) => {
+  updateUserProfileController(req, res);
+});
+// Update password only
+userRouter.put("/password/:id", authenticateToken, (req, res) => {
+  updateUserPasswordController(req, res);
+});
 
 export default userRouter;
