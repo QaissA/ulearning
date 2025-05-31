@@ -9,6 +9,7 @@ import loginRouter from "./loginRoutes";
 import PermissionsRouter from "./permissionsRoutes";
 import schoolYearRouter from "./schoolYearRoutes";
 import schoolRouter from "./schoolRoutes";
+import documentRouter from "./documentRoutes";
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.use("/timetable", timetableRouter);
 router.use('/permissions', PermissionsRouter)
 router.use("/school-years", schoolYearRouter)
 router.use("/school", schoolRouter);
+router.use("/documents", documentRouter);
 
 export default router;

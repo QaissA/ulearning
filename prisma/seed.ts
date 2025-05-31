@@ -210,6 +210,29 @@ async function main() {
     skipDuplicates: true,
   });
 
+  // Seed documents
+  await prisma.document.createMany({
+    data: [
+      {
+        title: 'School Handbook',
+        description: 'General rules and policies for the school year.',
+        url: 'https://example.com/handbook.pdf',
+        uploadedBy: teacher.id, // assuming teacher from previous seed
+        schoolId: school1.id,   // assuming school1 from previous seed
+        isDeleted: false,
+      },
+      {
+        title: 'Math Syllabus',
+        description: 'Syllabus for the Math subject.',
+        url: 'https://example.com/math-syllabus.pdf',
+        uploadedBy: teacher.id,
+        schoolId: school1.id,
+        isDeleted: false,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
   console.log('✅ Seeding complete!');
 }
 
