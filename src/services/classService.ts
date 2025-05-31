@@ -17,16 +17,24 @@ export const classService = {
     });
   },
 
-  createClass: async (name: string, description?: string) => {
+  createClass: async (
+    name: string,
+    description?: string,
+    schoolYearId?: number
+  ) => {
     return await prisma.class.create({
-      data: { name, description, isDeleted: false },
+      data: { name, description, isDeleted: false, schoolYearId },
     });
   },
 
-  updateClass: async (id: number, name?: string, description?: string) => {
+  updateClass: async (id: number, name?: string, description?: string, schoolYearId?: number) => {
     return await prisma.class.update({
       where: { id, isDeleted: false },
-      data: { name, description },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(schoolYearId !== undefined && { schoolYearId }),
+      },
     });
   },
 

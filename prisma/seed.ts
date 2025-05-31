@@ -65,6 +65,41 @@ async function main() {
     )
   );
 
+  // Create schools
+  const school1 = await prisma.school.upsert({
+    where: { name: 'Green Valley School' },
+    update: {},
+    create: {
+      name: 'Green Valley School',
+      address: '123 Main St, Cityville',
+      phone: '+1234567890',
+      email: 'info@greenvalley.edu',
+    },
+  });
+
+  const school2 = await prisma.school.upsert({
+    where: { name: 'Blue Mountain Academy' },
+    update: {},
+    create: {
+      name: 'Blue Mountain Academy',
+      address: '456 Hill Rd, Townsville',
+      phone: '+0987654321',
+      email: 'contact@bluemountain.edu',
+    },
+  });
+
+  // Create school year (now linked to school1)
+  const schoolYear = await prisma.schoolYear.upsert({
+    where: { name: '2024-2025' },
+    update: {},
+    create: {
+      name: '2024-2025',
+      startDate: new Date('2024-09-01'),
+      endDate: new Date('2025-06-30'),
+      schoolId: school1.id,
+    },
+  });
+
   // Create class
   const class1 = await prisma.class.upsert({
     where: { name: 'CM1 A' },
@@ -72,6 +107,7 @@ async function main() {
     create: {
       name: 'CM1 A',
       description: 'Primary school class CM1 section A',
+      schoolYearId: schoolYear.id,
     },
   });
 
