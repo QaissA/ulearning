@@ -32,6 +32,8 @@ model User {
   emploisDuTemps EmploiDuTemps[]
 
   documents   Document[]
+
+  transports Transport[] @relation("StudentTransport")
 }
 
 model Attendance {
@@ -142,6 +144,7 @@ model School {
   // Relations
   classes   Class[]
   schoolYears SchoolYear[]
+  transports Transport[]
 
   documents   Document[]
 }
@@ -173,4 +176,19 @@ model Document {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isDeleted   Boolean  @default(false)
+}
+
+model Transport {
+  id        Int      @id @default(autoincrement())
+  routeName String   @db.VarChar(100)
+  driver    String   @db.VarChar(100)
+  vehicle   String?  @db.VarChar(50)
+  capacity  Int?
+  schoolId  Int?
+  school    School?  @relation(fields: [schoolId], references: [id])
+  students  User[]   @relation("StudentTransport")
+  stops     String?  @db.Text // JSON or comma-separated list of stops
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
