@@ -37,13 +37,13 @@ export const getClassById = async (req: Request, res: Response): Promise<void> =
 // Create a new class
 export const createClass = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, description } = req.body;
+    const { name, description, schoolYearId } = req.body;
     if (!name) {
       res.status(400).json({ error: "Class name is required" });
       return;
     }
 
-    const classData = await classService.createClass(name, description);
+    const classData = await classService.createClass(name, description, schoolYearId);
     res.status(201).json(classData);
   } catch (error) {
     console.error(error);

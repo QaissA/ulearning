@@ -77,8 +77,12 @@ model Class {
   isDeleted   Boolean   @default(false)
 
   // Relations
-  users          User[] 
+  users          User[]
   emploisDuTemps EmploiDuTemps[]
+  schoolYearId   Int?
+  schoolYear     SchoolYear? @relation(fields: [schoolYearId], references: [id])
+  schoolId       Int?
+  school         School? @relation(fields: [schoolId], references: [id])
 }
 
 model Role {
@@ -121,4 +125,34 @@ model EmploiDuTemps {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isDeleted   Boolean  @default(false)
+}
+
+model School {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  address   String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(50)
+  email     String?  @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  // Relations
+  classes   Class[]
+  schoolYears SchoolYear[]
+}
+
+model SchoolYear {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(20) // e.g., "2024-2025"
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  // Relations
+  classes   Class[]
+  schoolId  Int?
+  school    School? @relation(fields: [schoolId], references: [id])
 }
