@@ -104,20 +104,6 @@ export const getUserById = async (id: number, isDeleted: boolean = false) => {
   });
 };
 
-export const updateUser = async (id: number, data: userCreate) => {
-  let updatedData = { ...data };
-
-  if (data.password) {
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-    updatedData.password = hashedPassword;
-  }
-
-  return await prisma.user.update({
-    where: { id },
-    data: updatedData,
-  });
-};
-
 // Soft delete user
 export const softDeleteUser = async (id: number) => {
   return prisma.user.update({
@@ -169,4 +155,26 @@ export const getAllUsers = async (
   });
 
   return { users, totalCount };
+};
+
+// Update user profile info (excluding password)
+export const updateUserProfile = async (id: number, data: Partial<Omit<userCreate, 'password'>>) => {
+  // Directly use data, since password is not part of the type
+  return await prisma.user.update({
+    where: { id },
+    data,
+  });
+};
+
+// Update user password (requires current password verification)
+export const updateUserPassword = async (id: number, currentPassword: string, newPassword: string) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error('User not found');
+  const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!passwordMatch) throw new Error('Current password is incorrect');
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+  return await prisma.user.update({
+    where: { id },
+    data: { password: hashedPassword },
+  });
 };
