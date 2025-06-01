@@ -233,6 +233,31 @@ async function main() {
     skipDuplicates: true,
   });
 
+  // Seed transports
+  await prisma.transport.createMany({
+    data: [
+      {
+        routeName: 'North Route',
+        driver: 'John Doe',
+        vehicle: 'Bus 1',
+        capacity: 40,
+        schoolId: school1.id,
+        stops: 'Main St, Oak Ave, Pine Rd',
+        isDeleted: false,
+      },
+      {
+        routeName: 'South Route',
+        driver: 'Jane Smith',
+        vehicle: 'Bus 2',
+        capacity: 35,
+        schoolId: school2.id,
+        stops: 'Hill Rd, River St, Maple Ave',
+        isDeleted: false,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
   console.log('✅ Seeding complete!');
 }
 

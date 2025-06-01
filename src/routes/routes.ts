@@ -10,6 +10,7 @@ import PermissionsRouter from "./permissionsRoutes";
 import schoolYearRouter from "./schoolYearRoutes";
 import schoolRouter from "./schoolRoutes";
 import documentRouter from "./documentRoutes";
+import transportRouter from "./transportRoutes";
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use('/permissions', PermissionsRouter)
 router.use("/school-years", schoolYearRouter)
 router.use("/school", schoolRouter);
 router.use("/documents", documentRouter);
+router.use("/transports", transportRouter);
 
 export default router;
