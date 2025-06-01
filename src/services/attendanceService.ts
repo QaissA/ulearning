@@ -25,13 +25,14 @@ export const getUserAttendance = async (userId: number) => {
 };
 
 // Get attendance for all users on a specific date
-export const getAttendanceByDate = async (date: string) => {
+export const getAttendanceByDate = async (date: string, page: number, limit: number) => {
   const timezone = 'America/Los_Angeles';
 
   const parsedDate = moment.tz(date, timezone).startOf('day').toDate();
   const endOfDay = moment.tz(date, timezone).endOf('day').toDate();
+  const skip = (page - 1) * limit;
 
-  return await prisma.attendance.findMany({
+  const attendance = await prisma.attendance.findMany({
     where: {
       date: {
         gte: parsedDate,
@@ -40,7 +41,22 @@ export const getAttendanceByDate = async (date: string) => {
       isDeleted: false,
     },
     include: { user: { select: { id: true, name: true } } },
+    skip,
+    take: limit,
+    orderBy: { id: 'asc' },
   });
+
+  const totalCount = await prisma.attendance.count({
+    where: {
+      date: {
+        gte: parsedDate,
+        lt: endOfDay,
+      },
+      isDeleted: false,
+    },
+  });
+
+  return { attendance, totalCount };
 };
 
 // Update attendance record

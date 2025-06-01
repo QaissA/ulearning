@@ -44,15 +44,16 @@ export const getUserAttendanceController = async (req: Request, res: Response): 
 
 // Get attendance for all users on a specific date
 export const getAttendanceByDateController = async (req: Request, res: Response): Promise<void> => {
-  const { date } = req.query;
+  const { date, page, limit } = req.query;
   if (!date) {
-    res.status(400).json({ error: "Date is required" }); 
+    res.status(400).json({ error: "Date is required" });
     return;
   }
-
   try {
-    const attendance = await getAttendanceByDate(date as string);
-    res.status(200).json(attendance);
+    const pageNum = parseInt(page as string) || 1;
+    const limitNum = parseInt(limit as string) || 10;
+    const { attendance, totalCount } = await getAttendanceByDate(date as string, pageNum, limitNum);
+    res.status(200).json({ attendance, totalCount, page: pageNum, limit: limitNum });
   } catch (err) {
     const error = err as Error;
     res.status(500).json({ error: error.message });
