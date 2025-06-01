@@ -18,11 +18,13 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Get all notes
+// Get all notes with pagination
 export const getNotes = async (req: Request, res: Response) => {
   try {
-    const notes = await noteService.getNotes();
-    res.json(notes);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const { notes, totalCount } = await noteService.getNotes(page, limit);
+    res.json({ notes, totalCount, page, limit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

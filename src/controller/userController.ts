@@ -72,10 +72,11 @@ export const getAllUsersController = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const users = await getAllUsers(includeDeleted, page, limit);
     res.status(200).json({
-      users,
-      pagination: {},
+      users: users.users,
+      totalCount: users.totalCount,
     });
   } catch (error) {
     res.status(500).json({ error: "Error getting users", details: error });
   }
 };
+  

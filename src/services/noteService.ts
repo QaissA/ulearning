@@ -9,12 +9,18 @@ export const createNote = async (userId: number, matiereId: number, score: numbe
   });
 };
 
-// Get all active notes (excluding soft-deleted ones)
-export const getNotes = async () => {
-  return await prisma.note.findMany({
+// Get all active notes (excluding soft-deleted ones) with pagination
+export const getNotes = async (page: number, limit: number) => {
+  const skip = (page - 1) * limit;
+  const notes = await prisma.note.findMany({
     where: { isDeleted: false },
-    include: { user: true, matiere: true }, 
+    include: { user: true, matiere: true },
+    skip,
+    take: limit,
+    orderBy: { id: "asc" },
   });
+  const totalCount = await prisma.note.count({ where: { isDeleted: false } });
+  return { notes, totalCount };
 };
 
 // Get notes by user (excluding soft-deleted ones)
