@@ -178,3 +178,45 @@ export const updateUserPassword = async (id: number, currentPassword: string, ne
     data: { password: hashedPassword },
   });
 };
+
+// Get all students for a teacher (by teacherId) with pagination
+export const getStudentsForTeacher = async (
+  teacherId: number,
+  page: number = 1,
+  limit: number = 10
+) => {
+  const skip = (page - 1) * limit;
+  // Find all classes the teacher teaches (via EmploiDuTemps)
+  const classIds = await prisma.emploiDuTemps.findMany({
+    where: { teacherId },
+    select: { classId: true },
+    distinct: ['classId'],
+  });
+  const ids = classIds.map((c) => c.classId);
+  if (ids.length === 0) return { students: [], totalCount: 0 };
+  // Find all students in those classes (role: Student)
+  const students = await prisma.user.findMany({
+    where: {
+      classId: { in: ids },
+      role: { name: 'Student' },
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      class: { select: { id: true, name: true } },
+    },
+    skip,
+    take: limit,
+    orderBy: { name: 'asc' },
+  });
+  const totalCount = await prisma.user.count({
+    where: {
+      classId: { in: ids },
+      role: { name: 'Student' },
+      isDeleted: false,
+    },
+  });
+  return { students, totalCount };
+};

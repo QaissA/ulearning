@@ -84,3 +84,17 @@ export const restoreSchool = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const getSchoolsByTeacherId = async (req: Request, res: Response) => {
+  try {
+    const teacherId = Number(req.params.teacherId);
+    if (isNaN(teacherId)) {
+      res.status(400).json({ error: "Invalid teacher ID" });
+      return;
+    }
+    const schools = await schoolService.getSchoolsByTeacherId(teacherId);
+    res.json(schools);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

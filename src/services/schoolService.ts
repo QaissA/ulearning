@@ -33,4 +33,10 @@ export const schoolService = {
       data: { isDeleted: false },
     });
   },
+  getSchoolsByTeacherId: async (teacherId: number) => {
+    return prisma.teacherSchool.findMany({
+      where: { teacherId },
+      include: { school: true },
+    });
+  },
 };

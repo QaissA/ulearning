@@ -54,3 +54,58 @@ export const restoreNote = async (id: number) => {
     data: { isDeleted: false },
   });
 };
+
+// Get notes for all students of a specific teacher (by teacherId)
+export const getNotesByTeacher = async (
+  teacherId: number,
+  page: number = 1,
+  limit: number = 10
+) => {
+  const skip = (page - 1) * limit;
+  // Find all classes the teacher teaches
+  const classIds = await prisma.emploiDuTemps.findMany({
+    where: { teacherId },
+    select: { classId: true },
+    distinct: ['classId'],
+  });
+  const ids = classIds.map((c) => c.classId);
+  if (ids.length === 0) return { notes: [], totalCount: 0 };
+  // Find all students in those classes
+  const students = await prisma.user.findMany({
+    where: {
+      classId: { in: ids },
+      role: { name: 'Student' },
+      isDeleted: false,
+    },
+    select: { id: true },
+  });
+  const studentIds = students.map((s) => s.id);
+  if (studentIds.length === 0) return { notes: [], totalCount: 0 };
+  // Get notes for those students
+  const notes = await prisma.note.findMany({
+    where: {
+      userId: { in: studentIds },
+      isDeleted: false,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          class: { select: { id: true, name: true } },
+        },
+      },
+      matiere: true,
+    },
+    skip,
+    take: limit,
+    orderBy: { id: 'asc' },
+  });
+  const totalCount = await prisma.note.count({
+    where: {
+      userId: { in: studentIds },
+      isDeleted: false,
+    },
+  });
+  return { notes, totalCount };
+};

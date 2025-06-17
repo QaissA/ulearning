@@ -34,6 +34,8 @@ model User {
   documents   Document[]
 
   transports Transport[] @relation("StudentTransport")
+
+  teacherSchools TeacherSchool[]
 }
 
 model Attendance {
@@ -147,6 +149,8 @@ model School {
   transports Transport[]
 
   documents   Document[]
+
+  teacherSchools TeacherSchool[]
 }
 
 model SchoolYear {
@@ -180,7 +184,7 @@ model Document {
 
 model Transport {
   id        Int      @id @default(autoincrement())
-  routeName String   @db.VarChar(100)
+  routeName String   @db.VarChar(100) 
   driver    String   @db.VarChar(100)
   vehicle   String?  @db.VarChar(50)
   capacity  Int?
@@ -191,4 +195,14 @@ model Transport {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
+}
+
+model TeacherSchool {
+  id        Int    @id @default(autoincrement())
+  teacher   User   @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  school    School @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+
+  @@unique([teacherId, schoolId])
 }

@@ -43,6 +43,25 @@ export const getNotesByUser = async (req: Request, res: Response) => {
   }
 };
 
+// Get notes for all students of a specific teacher
+export const getNotesByTeacher = (req: Request, res: Response) => {
+  const teacherId = parseInt(req.params.teacherId);
+  if (isNaN(teacherId)) {
+    res.status(400).json({ error: "Invalid teacher id" });
+    return;
+  }
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  noteService.getNotesByTeacher(teacherId, page, limit)
+    .then(({ notes, totalCount }) => {
+      res.json({ notes, totalCount, page, limit });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+};
+
 // Update a note
 export const updateNote = async (req: Request, res: Response): Promise<void> => {
   try {

@@ -6,6 +6,7 @@ import {
   getUsersByRoleController,
   updateUserProfileController,
   updateUserPasswordController,
+  getMyStudents,
 } from "../controller/userController";
 
 import express from "express";
@@ -26,6 +27,10 @@ userRouter.put("/profile/:id", authenticateToken, (req, res) => {
 // Update password only
 userRouter.put("/password/:id", authenticateToken, (req, res) => {
   updateUserPasswordController(req, res);
+});
+// Route to get all students for the teacher by id param
+userRouter.get("/:id/my-students", authenticateToken, (req, res) => {
+  getMyStudents(req, res);
 });
 
 export default userRouter;

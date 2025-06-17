@@ -7,6 +7,7 @@ import {
   getUsersByRole,
   updateUserProfile,
   updateUserPassword,
+  getStudentsForTeacher,
 } from "../services/userService";
 import { read } from "fs";
 
@@ -94,4 +95,16 @@ export const updateUserPasswordController = async (req: Request, res: Response) 
   } catch (error) {
     res.status(400).json({ error: "Error updating password", details: error instanceof Error ? error.message : error });
   }
+};
+
+// Get all students for the teacher by id param
+export const getMyStudents = (req: Request, res: Response) => {
+  // Extract teacher id from route params
+  const teacherId = parseInt(req.params.id);
+  if (isNaN(teacherId)) {
+    return res.status(400).json({ error: "Invalid teacher id" });
+  }
+  getStudentsForTeacher(teacherId)
+    .then((students) => res.status(200).json(students))
+    .catch((error) => res.status(500).json({ error: "Error fetching students for teacher", details: error }));
 };
