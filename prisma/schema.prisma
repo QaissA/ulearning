@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,10 +7,202 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//this is just for testing
 model User {
+  id               Int      @id @default(autoincrement())
+  name             String   @db.VarChar(255)
+  email            String   @unique(map: "User_email_key") @db.VarChar(255)
+  password         String   @db.VarChar(255)
+  roleId           Int?
+  role             Role?     @relation(fields: [roleId], references: [id])
+  adress           String?  @db.VarChar(255)
+  verificationCode String?  @db.VarChar(255)
+  isVerified       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  isDeleted        Boolean  @default(false)
+
+  // Relation to Class
+  classId Int?  
+  class   Class? @relation(fields: [classId], references: [id])
+
+  // Attendance & Notes (Only for students)
+  attendances Attendance[]
+  notes       Note[]
+
+  emploisDuTemps EmploiDuTemps[]
+
+  documents   Document[]
+
+  transports Transport[] @relation("StudentTransport")
+
+  teacherSchools TeacherSchool[]
+}
+
+model Attendance {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime @default(now())
+  status    String   @db.VarChar(10) // "PRESENT" or "ABSENT"
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}
+
+model Note {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  matiereId  Int
+  matiere    Matiere  @relation(fields: [matiereId], references: [id])
+  score      Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
+}
+
+model Matiere {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255) 
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+
+  // Relations
+  notes          Note[]
+  emploisDuTemps EmploiDuTemps[]
+}
+
+model Class {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+
+  // Relations
+  users          User[]
+  emploisDuTemps EmploiDuTemps[]
+  schoolYearId   Int?
+  schoolYear     SchoolYear? @relation(fields: [schoolYearId], references: [id])
+  schoolId       Int?
+  school         School? @relation(fields: [schoolId], references: [id])
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50)
+  description String?  @db.VarChar(255) 
+  users       User[]
+  rolePermissions RolePermission[]
+}
+
+model Permission {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
+  description String?           @db.VarChar(255)
+  key         String            @unique @db.VarChar(100) // e.g., "users:read", "users:write"
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+model EmploiDuTemps {
+  id          Int      @id @default(autoincrement())
+  classId     Int
+  class       Class    @relation(fields: [classId], references: [id])
+  matiereId   Int
+  matiere     Matiere  @relation(fields: [matiereId], references: [id])
+  teacherId   Int
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  day         String   @db.VarChar(20) 
+  heureDebut  String   @db.VarChar(5)
+  heureFin    String   @db.VarChar(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+}
+
+model School {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  address   String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(50)
+  email     String?  @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  // Relations
+  classes   Class[]
+  schoolYears SchoolYear[]
+  transports Transport[]
+
+  documents   Document[]
+
+  teacherSchools TeacherSchool[]
+}
+
+model SchoolYear {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(20) // e.g., "2024-2025"
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  // Relations
+  classes   Class[]
+  schoolId  Int?
+  school    School? @relation(fields: [schoolId], references: [id])
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  url         String   @db.VarChar(500)
+  uploadedBy  Int
+  user        User     @relation(fields: [uploadedBy], references: [id])
+  schoolId    Int?
+  school      School?  @relation(fields: [schoolId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+}
+
+model Transport {
+  id        Int      @id @default(autoincrement())
+  routeName String   @db.VarChar(100) 
+  driver    String   @db.VarChar(100)
+  vehicle   String?  @db.VarChar(50)
+  capacity  Int?
+  schoolId  Int?
+  school    School?  @relation(fields: [schoolId], references: [id])
+  students  User[]   @relation("StudentTransport")
+  stops     String?  @db.Text // JSON or comma-separated list of stops
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}
+
+model TeacherSchool {
+  id        Int    @id @default(autoincrement())
+  teacher   User   @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  school    School @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+
+  @@unique([teacherId, schoolId])
 }
